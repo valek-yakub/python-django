@@ -13,9 +13,18 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+import debug_toolbar
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+from django.views.generic import RedirectView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('manager/', include("manager.urls")),
+    path('__debug__/', include(debug_toolbar.urls)),
+]
+
+# Redirect 127.0.0.1:8000 to 127.0.0.1:8000/manager/
+urlpatterns += [
+    path('', RedirectView.as_view(url="/manager/", permanent=False)),
 ]
