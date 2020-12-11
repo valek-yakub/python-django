@@ -3,9 +3,8 @@
 """
 from django.urls import path
 
-from manager.views import hello
+from manager.views import MyPage
 
-# Test mapping url <-> view
 urlpatterns = [
-    path('<str:name>', hello)
+    path('', MyPage.as_view(), name="the-main-page"),
 ]

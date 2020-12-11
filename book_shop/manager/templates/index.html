@@ -1,0 +1,19 @@
+{% extends "base_generic.html" %}
+
+{% block context %}
+    {% for book in books %}
+        <h3 style="text-align: left">{{ book.title }}</h3>
+        <h4>{{ book.date }}</h4><br>
+        <h4>{{ book.summary }}</h4>
+        <h4>Comments:</h4>
+        {% for comment in book.comments.all %}
+            <div style="text-align: left">
+                {{ comment }}  {{ comment.date }}
+            </div>
+            <h5>{{ comment.text }}</h5>
+            <h4>Comments count: {{ book.comments.count }}</h4>
+        {% endfor %}
+        <hr>
+
+    {% endfor %}
+{% endblock %}
