@@ -1,6 +1,10 @@
+from django.db import IntegrityError
 from django.contrib.auth.models import User
 from django.db import models
-from django.urls import reverse
+from django.db.models import UniqueConstraint
+
+
+# from django.urls import reverse
 
 
 # Create your models here.
@@ -26,9 +30,35 @@ class Book(models.Model):
                                help_text="Enter a short description of the book.",
                                null=True,
                                blank=True)
+    authors = models.ManyToManyField(User, blank=True, related_name="books")
+    likes = models.ManyToManyField(User,
+                                   through="manager.LikeBookUser",
+                                   blank=True,
+                                   related_name="liked_books")
 
     def __str__(self):
+        """Display Book model"""
         return self.title
+
+
+class LikeBookUser(models.Model):
+    """
+        Model represents Likes through the ManyToMany link between Book and User models.
+    """
+
+    class Meta:
+        constraints = [
+            UniqueConstraint(fields=['book', 'user'], name='like_unique_book_user')
+        ]
+
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name="liked_user_table")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="liked_book_table")
+
+    def save(self, **kwargs):
+        try:
+            super(LikeBookUser, self).save(kwargs)
+        except IntegrityError:
+            LikeBookUser.objects.get(user=self.user, book_id=self.book).delete()
 
 
 class Comment(models.Model):
@@ -43,11 +73,38 @@ class Comment(models.Model):
     text = models.TextField(max_length=1000,
                             verbose_name="Comment",
                             blank=True,
-                            null=True
-                            )
+                            null=True)
     date = models.DateTimeField(auto_now_add=True)
-    book = models.ForeignKey("Book", on_delete=models.CASCADE, related_name="comments")
-    author = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name="comments")
+    author = models.ForeignKey(User,
+                               on_delete=models.CASCADE,
+                               null=True,
+                               blank=True,
+                               related_name="comments")
+    likes = models.ManyToManyField(User,
+                                   through="manager.LikeCommentUser",
+                                   blank=True, related_name="liked_comments")
 
     def __str__(self):
+        """Display Comment model"""
         return f"Comment: id={self.id} author={self.author}"
+
+
+class LikeCommentUser(models.Model):
+    """
+        Model represents Likes through the ManyToMany link between Comment and User models.
+    """
+
+    class Meta:
+        constraints = [
+            UniqueConstraint(fields=["comment", "user"], name="like_unique_comment_user")
+        ]
+
+    comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name="liked_user_table")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="liked_comment_table")
+
+    def save(self, **kwargs):
+        try:
+            super(LikeCommentUser, self).save(kwargs)
+        except IntegrityError:
+            LikeCommentUser.objects.get(user=self.user, comment_id=self.comment).delete()

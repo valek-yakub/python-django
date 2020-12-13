@@ -1,19 +1,30 @@
 {% extends "base_generic.html" %}
 
 {% block context %}
+{{ user }}
     {% for book in books %}
-        <h3 style="text-align: left">{{ book.title }}</h3>
+
+<!--Book information section-->
+        <a href="#"><h3>{{ book.title }}</h3></a> <!--TODO: Add book detail page.-->
         <h4>{{ book.date }}</h4><br>
         <h4>{{ book.summary }}</h4>
-        <h4>Comments:</h4>
+        <h4><strong>Author</strong>: {{ book.authors.all }}</h4>
+
+    <!--Likes for the book. TODO: Rate is instead of likes.-->
+        <a href="{% url 'add-like-book' id=book.id %}">
+            <span style="text-align:left">Likes: {{ book.likes_count }}</span>
+        </a>
+
+<!--Comment section-->
+        <h4><strong>Comments {{ books.comments_count }}:</strong></h4>
         {% for comment in book.comments.all %}
-            <div style="text-align: left">
-                {{ comment }}  {{ comment.date }}
-            </div>
-            <h5>{{ comment.text }}</h5>
-            <h4>Comments count: {{ book.comments.count }}</h4>
+             <h5>{{ comment.text }}</h5>
+        {{ comment }}  {{ comment.date }}
+        <a href="{% url 'add-like-comment' id=comment.id %}">
+            <span style="text-align:left">Likes: {{ comment.likes.count }}</span>
+        </a>
         {% endfor %}
         <hr>
-
+    <!--TODO: Likes for the comment-->
     {% endfor %}
 {% endblock %}

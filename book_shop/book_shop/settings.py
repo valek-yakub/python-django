@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # "manager.apps.ManagerConfig",
     "manager.apps.ManagerConfig",
     "debug_toolbar",
 ]
