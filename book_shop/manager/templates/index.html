@@ -16,7 +16,7 @@
         </a>
 
 <!--Comment section-->
-        <h4><strong>Comments {{ books.comments_count }}:</strong></h4>
+        <h4><strong>Comments {{ book.comments_count }}:</strong></h4>
         {% for comment in book.comments.all %}
              <h5>{{ comment.text }}</h5>
         {{ comment }}  {{ comment.date }}
