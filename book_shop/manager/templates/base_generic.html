@@ -1,14 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    {% block title %}<title>Manager</title>{% endblock %}
-    <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-</head>
-<body>
-    <div class="container">
-        {% block context %}{% endblock %}
-    </div>
-</body>
+    <head>
+        <meta charset="UTF-8">
+        {% block title %}<title>Manager</title>{% endblock %}
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet"
+              href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        <!-- Font Awesome Icon Library -->
+        <link rel="stylesheet"
+              href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <style>
+            .checked {
+                color: green;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            {% block context %}{% endblock %}
+        </div>
+    </body>
 </html>

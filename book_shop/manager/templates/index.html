@@ -8,20 +8,22 @@
         <a href="#"><h3>{{ book.title }}</h3></a> <!--TODO: Add book detail page.-->
         <h4>{{ book.date }}</h4><br>
         <h4>{{ book.summary }}</h4>
-        <h4><strong>Author</strong>: {{ book.authors.all }}</h4>
-
-    <!--Likes for the book. TODO: Rate is instead of likes.-->
+    <!--Likes for the book.-->
         <a href="{% url 'add-like-book' id=book.id %}">
-            <span style="text-align:left">Likes: {{ book.likes_count }}</span>
+            <span style="text-align:left">Likes: {{ book.likes }}</span>
         </a>
+
+    <!--Rates for the book. TODO: Rate.-->
+        <span class="fa fa-star checked"></span>
+        <span class="fa fa-star"></span>
 
 <!--Comment section-->
         <h4><strong>Comments {{ book.comments_count }}:</strong></h4>
         {% for comment in book.comments.all %}
              <h5>{{ comment.text }}</h5>
-        {{ comment }}  {{ comment.date }}
+        {{ comment.author }}  {{ comment.date }}
         <a href="{% url 'add-like-comment' id=comment.id %}">
-            <span style="text-align:left">Likes: {{ comment.likes.count }}</span>
+            <span>Likes: {{ comment.likes }}</span>
         </a>
         {% endfor %}
         <hr>

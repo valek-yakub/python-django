@@ -17,6 +17,7 @@ class Book(models.Model):
         verbose_name = "Book"
         verbose_name_plural = "Books"
 
+    objects = models.Manager()
     title = models.CharField(max_length=50,
                              verbose_name="Title",  # Display in Admin site.
                              help_text="Enter a title of the book."
@@ -31,10 +32,11 @@ class Book(models.Model):
                                null=True,
                                blank=True)
     authors = models.ManyToManyField(User, blank=True, related_name="books")
-    likes = models.ManyToManyField(User,
-                                   through="manager.LikeBookUser",
-                                   blank=True,
-                                   related_name="liked_books")
+    likes = models.PositiveIntegerField(default=0)
+    user_likes = models.ManyToManyField(User,
+                                        through="manager.LikeBookUser",
+                                        blank=True,
+                                        related_name="liked_books")
 
     def __str__(self):
         """Display Book model"""
@@ -51,6 +53,7 @@ class LikeBookUser(models.Model):
             UniqueConstraint(fields=['book', 'user'], name='like_unique_book_user')
         ]
 
+    objects = models.Manager()
     book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name="liked_user_table")
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="liked_book_table")
 
@@ -58,7 +61,11 @@ class LikeBookUser(models.Model):
         try:
             super(LikeBookUser, self).save(kwargs)
         except IntegrityError:
-            LikeBookUser.objects.get(user=self.user, book_id=self.book).delete()
+            LikeBookUser.objects.get(user=self.user, book=self.book).delete()
+            self.book.likes -= 1
+        else:
+            self.book.likes += 1
+        self.book.save()
 
 
 class Comment(models.Model):
@@ -70,6 +77,7 @@ class Comment(models.Model):
         verbose_name = "Comment"
         verbose_name_plural = "Comments"
 
+    objects = models.Manager()
     text = models.TextField(max_length=1000,
                             verbose_name="Comment",
                             blank=True,
@@ -81,9 +89,10 @@ class Comment(models.Model):
                                null=True,
                                blank=True,
                                related_name="comments")
-    likes = models.ManyToManyField(User,
-                                   through="manager.LikeCommentUser",
-                                   blank=True, related_name="liked_comments")
+    likes = models.PositiveIntegerField(default=0)
+    user_likes = models.ManyToManyField(User,
+                                        through="manager.LikeCommentUser",
+                                        blank=True, related_name="liked_comments")
 
     def __str__(self):
         """Display Comment model"""
@@ -100,6 +109,7 @@ class LikeCommentUser(models.Model):
             UniqueConstraint(fields=["comment", "user"], name="like_unique_comment_user")
         ]
 
+    objects = models.Manager()
     comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name="liked_user_table")
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="liked_comment_table")
 
@@ -108,3 +118,7 @@ class LikeCommentUser(models.Model):
             super(LikeCommentUser, self).save(kwargs)
         except IntegrityError:
             LikeCommentUser.objects.get(user=self.user, comment_id=self.comment).delete()
+            self.comment.likes -= 1
+        else:
+            self.comment.likes += 1
+        self.comment.save()
