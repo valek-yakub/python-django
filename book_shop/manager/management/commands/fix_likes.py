@@ -5,6 +5,9 @@ from manager.models import Book, Comment
 
 
 class Command(BaseCommand):
+    """
+        Class is used to prevent the previous backward problem caused by the update like's mechanism.
+    """
 
     def handle(self, *args, **options):
         books = Book.objects.annotate(count_likes=Count("user_likes"))

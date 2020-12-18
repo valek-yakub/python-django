@@ -1,4 +1,5 @@
 {% extends "base_generic.html" %}
+{% load manager_filter %}
 
 {% block context %}
 {{ user }}
@@ -8,14 +9,19 @@
         <a href="#"><h3>{{ book.title }}</h3></a> <!--TODO: Add book detail page.-->
         <h4>{{ book.date }}</h4><br>
         <h4>{{ book.summary }}</h4>
-    <!--Likes for the book.-->
-        <a href="{% url 'add-like-book' id=book.id %}">
-            <span style="text-align:left">Likes: {{ book.likes }}</span>
-        </a>
 
-    <!--Rates for the book. TODO: Rate.-->
-        <span class="fa fa-star checked"></span>
-        <span class="fa fa-star"></span>
+    <!--Rates for the book.-->
+    <span style="text-align: left">
+        {% for i in stars_num %}
+            {% if i <= book.rate_stars_num %}
+                <a href="{% url 'add-rate-book' id=book.id rate=i %}"><span class="fa fa-star fa-2x checked"></span></a>
+            {% else %}
+                <a href="{% url 'add-rate-book' id=book.id rate=i %}"><span class="fa fa-star fa-2x"></span></a>
+            {% endif %}
+        {% endfor %}
+    </span>
+    <span style="font-size: 30px; padding-left: 15px">{{ book.users_rate_score }}</span>
+
 
 <!--Comment section-->
         <h4><strong>Comments {{ book.comments_count }}:</strong></h4>
